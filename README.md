@@ -1,167 +1,93 @@
 # Vexiqora
 
-A free online developer toolbox with **23 tools** that run entirely in the visitor’s browser: no accounts, no database, no paid APIs, no analytics. Live at https://vexiqora.vercel.app.
+**Free online developer tools that run in your browser.** 23 tools for JSON, encodings, text, design and generators. No accounts, no database, no paid services, no analytics. What you paste into a tool is processed on your own device and is not uploaded by the site's code.
 
-Built with Next.js (App Router), TypeScript and Tailwind CSS.
+Live at **https://vexiqora.vercel.app**. Built with Next.js (App Router), TypeScript and Tailwind CSS, and deployed on Vercel's free tier.
 
-| Category | Tools |
-| --- | --- |
-| Data & JSON | JSON Formatter & Validator · JSON Minifier · JSON Tree Viewer · JSON ⇄ CSV Converter |
-| Web development | URL Encoder/Decoder · HTML Entity Encoder/Decoder · Base64 Encoder/Decoder · Unix Timestamp Converter · HTTP Status Code Reference · JWT Decoder |
-| Text | Regex Tester · Markdown Editor · Case Converter · Word & Character Counter · Text Diff (single list or side by side) |
-| Design | HEX/RGB/HSL Color Converter · CSS Gradient Generator · CSS Box Shadow Generator · CSS Border Radius Generator |
-| Generators | Password Generator · UUID Generator · Lorem Ipsum Generator · Random Number Generator |
+---
 
-Site features: dark and light themes, a searchable tool directory with category filters, favorites and recently used tools (saved only in your browser), and a **Ctrl+K / Cmd+K** command palette. Each tool has its own URL, `/tools/<slug>`.
+## The tools
 
-**Not built yet:** YAML ⇄ JSON, HTML/CSS/JavaScript minifiers and the QR code generator. They need well-tested third-party libraries (for example `yaml`, `qrcode`, `terser`) and are planned as a later batch.
+Every tool has its own shareable URL (`/tools/<name>`), a "Load sample" button where there is input, Copy / Clear / Reset actions, Download where a file makes sense, clear error messages, and a how-to section with notes on its limits. Tools with predictable output also show a worked example, which an automated test checks against the real tool.
 
-## 1. Install
+### Data & JSON
+- **JSON Formatter & Validator** (`json-formatter`): format with 2 spaces, 4 spaces or tabs, minify, and validate; error line and column when the browser provides them; download the result.
+- **JSON Minifier** (`json-minifier`): strips whitespace and shows the exact bytes saved (measured as UTF-8).
+- **JSON Tree Viewer** (`json-tree-viewer`): expandable and collapsible tree built on native disclosure elements (keyboard accessible); Expand all / Collapse all; very large nodes show the first 500 children; all values are drawn as text.
+- **JSON ⇄ CSV Converter** (`json-csv`): both directions; comma, semicolon, tab or pipe delimiters; quoted fields, escaped quotes and line breaks inside values; optional header row and number/boolean detection; leading zeros and huge integers stay as text; "Use output as input" flips direction.
 
-You need **Node.js 20 or newer** (check with `node -v`; download from https://nodejs.org if needed).
+### Web development
+- **URL Encoder & Decoder** (`url-encoder`): component or full-URL encoding, "+ as space" decoding, clear errors for malformed percent-encoding.
+- **HTML Entity Encoder & Decoder** (`html-entities`): encodes special characters (optionally all non-ASCII) and decodes numeric and common named entities. Input is handled purely as text and never inserted into the page.
+- **Base64 Encoder & Decoder** (`base64`): full UTF-8 (emoji, non-English text), URL-safe option, tolerant decoding, specific error messages.
+- **Unix Timestamp Converter** (`timestamp-converter`): seconds or milliseconds with auto-detection; ISO 8601, UTC, your time zone and relative time; dates back to timestamps (UTC, local or with an offset); impossible dates such as 31 February are rejected.
+- **HTTP Status Code Reference** (`http-status-codes`): about 60 codes with short explanations, search and class filters, and an empty state.
+- **JWT Decoder** (`jwt-decoder`): shows the header, payload and time claims (issued, not-before, expiry). It states prominently that it **decodes only and does not verify signatures**, and warns about unsigned and `alg: none` tokens.
 
-```bash
-cd vexiqora
-npm install
-cp .env.example .env.local
-```
+### Text
+- **Regex Tester** (`regex-tester`): live match highlighting, positions, capture and named groups, flags, replacement preview, clear syntax errors; text and match counts are capped to protect the tab.
+- **Markdown Editor** (`markdown-editor`): live preview, Copy HTML, download `.md`. Raw HTML you type is shown as text, images are never loaded, and only http, https and mailto links are made clickable.
+- **Case Converter** (`case-converter`): UPPER, lower, Title, Sentence, camel, Pascal, snake, kebab, CONSTANT and dot case; handles acronyms, digits, accents and multiple lines.
+- **Word & Character Counter** (`word-counter`): words, characters (with and without spaces), sentences, lines, paragraphs, and a labelled reading-time estimate.
+- **Text Diff Checker** (`text-diff`): single-list or side-by-side view, line numbers, the changed part of each paired line highlighted, hide-unchanged toggle, swap, and a size guard.
 
-## 2. Run it locally
+### Design
+- **HEX, RGB & HSL Color Converter** (`color-converter`): accepts HEX (3/4/6/8 digits), `rgb()`/`rgba()` and `hsl()`/`hsla()`; live preview, color picker, copy buttons.
+- **CSS Gradient Generator** (`gradient-generator`): linear, radial and conic; 2 to 6 stops; live preview; copy-ready CSS built only from validated values.
+- **CSS Box Shadow Generator** (`box-shadow-generator`): offset, blur, spread, color and opacity sliders; up to 4 layers; inset option.
+- **CSS Border Radius Generator** (`border-radius-generator`): independent or linked corners, px or %, elliptical corners, shortest valid CSS.
 
-```bash
-npm run dev
-```
+### Generators
+- **Password Generator** (`password-generator`): 4 to 128 characters; uses `crypto.getRandomValues` with bias-free selection, guarantees each chosen character type, optional look-alike exclusion; shows an entropy-based strength estimate (clearly labelled as an estimate). Passwords are not stored.
+- **UUID Generator** (`uuid-generator`): version 4 (random) or 7 (time-ordered), up to 1,000 at once, uppercase and no-hyphen options, copy and download.
+- **Lorem Ipsum Generator** (`lorem-ipsum`): paragraphs, sentences or words, optional classic opening, with sensible limits.
+- **Random Number Generator** (`random-number`): whole numbers or decimals between any bounds (up to ±9,007,199,254,740,991), secure and unbiased, unique-only, sorting, separators.
 
-Open http://localhost:3000. Edits you save appear automatically.
+---
 
-## 3. Check it
+## The platform
 
-```bash
-npm run test        # 116 unit tests for the tool logic, examples, metadata and assets
-npm run lint        # code-style and accessibility checks
-npm run typecheck   # TypeScript checks
-npm run build       # production build, the same one Vercel runs
-npm run start       # serve the production build at http://localhost:3000
-```
+- **Dark and light themes** with a button at the top left; follows your device setting at first, remembers your choice, and applies it before the page draws.
+- **Searchable directory** on the homepage with category filters and an empty state.
+- **Favorites** (star any tool) and **recently used** tools, saved only in your browser as tool names, with a "Clear recent" button.
+- **Command palette:** press **Ctrl+K** (or **Cmd+K** on a Mac) anywhere to search and jump to a tool with the keyboard; built on the native `<dialog>` element, with arrow-key navigation, Enter to open and Esc to close.
+- **Lazy loading:** each tool's code loads only when you open it.
+- Consistent inputs, buttons, notices and empty states; responsive layout; respects the "reduce motion" setting.
 
-Run `npm run build` before every deploy. If it fails, read the first error message; it names the file and line. After building, click through a few tools by hand in the browser. The automated tests check the logic, not the screen.
+## Privacy and security
 
-## 4. Environment variables
+- Tool input is processed in the browser and is never sent by the site's code. There are no accounts, analytics, ads or cookies set by Vexiqora.
+- Saved in local storage: theme, favorite tool names, recent tool names. Never anything you type. The Privacy page says exactly this.
+- User input is treated as untrusted: pasted HTML and Markdown are escaped or shown as text, links are restricted to safe schemes, and generated CSS contains only validated values. Automated tests try common attack strings.
+- No secrets or API keys are used anywhere.
 
-The production domain, **https://vexiqora.vercel.app**, is already set in `src/lib/site.ts`, so none of these are required. Set them in `.env.local` locally, and in Vercel under **Project → Settings → Environment Variables**.
+## Search and sharing
 
-| Name | What it does |
-| --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Only needed if the site moves to another domain. Overrides the default for canonical links, Open Graph URLs, `sitemap.xml` and `robots.txt`. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Optional. Shown on the Contact page, which is then added to the sitemap. |
-| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional. The code from Google Search Console’s “HTML tag” method (see below). |
+- Unique title and description for every page, canonical URLs, Open Graph and Twitter large-image cards, all built from `https://vexiqora.vercel.app`.
+- Generated `sitemap.xml` (homepage, 23 tools, About, Privacy) and `robots.txt`. Vercel preview deployments are kept out of search.
+- Tool pages are linked from the homepage, the footer (grouped by category), related-tool lists and the About page.
+- Structured data describes each tool as a free web application, with no ratings or reviews.
 
-`NEXT_PUBLIC_` means the value is visible in the browser. That’s fine here: none are secret. Never put passwords or API keys in a `NEXT_PUBLIC_` variable. Redeploy after changing a variable.
+---
 
-## 5. Deploy to Vercel (free)
+## Verification status
 
-1. Create a GitHub account if you don’t have one, then create a new empty repository.
-2. Push this project:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial Vexiqora"
-   git branch -M main
-   git remote add origin https://github.com/YOUR-NAME/vexiqora.git
-   git push -u origin main
-   ```
-3. Go to https://vercel.com, sign in with GitHub, choose **Add New → Project**, and import the repository. Vercel detects Next.js; keep the defaults.
-4. No environment variables are required. Add `NEXT_PUBLIC_CONTACT_EMAIL` if you want a contact address shown.
-5. Select **Deploy**. Every later `git push` redeploys automatically.
-6. Make sure the project’s domain is `vexiqora.vercel.app` (**Project → Settings → Domains**). If you later add a custom domain, set `NEXT_PUBLIC_SITE_URL` to it and redeploy.
-7. After launch, follow the Search Console steps below.
+**Done here:**
+- 116 automated unit tests of the tool logic, examples, metadata, assets and security cases pass.
+- A TypeScript check of all source against stand-in framework types found no problems in the project's own code.
+- **32 real-browser tests** (Chromium) drove the actual tool components: loading samples, valid and invalid input, copy, download, favorites, recents, theme switching, the Ctrl+K palette and a blocked-storage case. All passed with no console errors or React warnings. This ran without Tailwind styling and without Next.js itself.
 
-## Project structure
+**Not done (you need to run these):**
+- `npm install`, `npm run lint`, `npm run build` against the real packages (the sandbox had no network access).
+- Visual checks: Tailwind styling, dark-theme appearance, mobile and tablet layouts, color contrast, focus rings, and any hydration messages in the browser console.
+- Performance (Core Web Vitals), accessibility audits and social-card previews. No figures are claimed.
+- Deployment, and any indexing or ranking by search engines.
 
-```
-src/
-  app/                        Each folder here becomes a URL ("routes").
-    layout.tsx                Wraps every page: fonts, navbar, footer, theme script, default metadata.
-    page.tsx                  Homepage (/).
-    tools/[slug]/page.tsx     ONE page that serves every tool at /tools/<slug>. Titles, descriptions
-                              and canonical URLs come from the tool list in src/lib/tools.ts.
-    about/ privacy/ contact/  Text pages.
-    sitemap.ts, robots.ts     Generate /sitemap.xml and /robots.txt (tools are added automatically).
-    favicon.ico, icon.svg, apple-icon.png   Site icons, linked automatically by filename.
-    globals.css               Light and dark colour values, Markdown preview styles, reduced-motion rule.
-  components/
-    tools/                    One interactive component per tool (JsonTool.tsx, RegexTool.tsx, ...).
-    ToolRenderer.tsx          Maps each tool's URL name to its component and loads it only when needed.
-    ToolLayout.tsx            Frame shared by all tool pages: heading, favorite button, how-to, example, notes.
-    ToolBrowser.tsx           Homepage search, category filters, favorites and recently used.
-    CommandPalette.tsx        The Ctrl+K / Cmd+K search window.
-    Fields.tsx                Shared form controls (text box, dropdown, checkbox, slider, choice group).
-    Button, CopyButton, DownloadButton, TextArea, Notice, ThemeToggle, ToolActions, Navbar, Footer, Logo, ToolCard, PageShell
-  lib/                        Plain TypeScript with no screen code, so it is easy to test.
-    json.ts jsonTree.ts csv.ts textCodec.ts uuid.ts random.ts randomNumbers.ts timestamp.ts httpStatus.ts
-    jwt.ts regex.ts markdown.ts caseConvert.ts counter.ts diff.ts color.ts gradient.ts boxShadow.ts
-    borderRadius.ts password.ts lorem.ts base64.ts     The logic of each tool.
-    tools.ts                  The list of tools: names, descriptions, how-to text (one source of truth).
-    examples.ts samples.ts    The worked examples shown on pages, and the "Load sample" inputs.
-    search.ts storage.ts useList.ts   Tool search, and favorites / recents in local storage.
-    site.ts metadata.ts       Domain, titles, canonical URLs, Open Graph and Twitter tags.
-public/og-image.png           Social sharing image (1200 × 630). Editable source: design/og-image.svg.
-tests/                        Unit tests (run with npm run test).
-tailwind.config.ts            Colour names and fonts. The colour values are in src/app/globals.css.
-```
+## Not built yet
+- YAML ⇄ JSON, HTML / CSS / JavaScript minifiers and the QR code generator. They are best built with established, well-tested libraries, which couldn't be installed or verified in this environment.
 
-## A few concepts, in plain language
-
-- **Component**: a function that returns a piece of the page. `<Button />` is a component. Small components are combined into pages.
-- **Props**: the inputs you pass to a component, like arguments to a Python function: `<CopyButton text="hi" label="Copy" />`.
-- **Server vs client components**: by default, Next.js components are built ahead of time on the server and sent as plain HTML (fast, good for search engines). A file that starts with `"use client"` also runs in the visitor’s browser, which is needed for anything interactive such as buttons, typing and the clipboard.
-- **`useState`**: how a component remembers a value (such as the text in a box). When you change it, React redraws the part of the page that uses it.
-- **Lazy loading**: each tool’s code is downloaded only when you open that tool (see `ToolRenderer.tsx`), so opening one tool doesn’t load the other twenty-two.
-- **Dynamic route**: the folder name `[slug]` means “any value here”. One file serves `/tools/json-formatter`, `/tools/regex-tester` and so on.
-
-## Adding a new tool
-
-1. Put its logic in `src/lib/<name>.ts` and add tests in `tests/`.
-2. Build its interface in `src/components/tools/<Name>Tool.tsx` (start the file with `"use client";`). Copy a similar existing tool as a starting point.
-3. Add an entry to the `tools` list in `src/lib/tools.ts` (name, category, icon, description, how-to text).
-4. Add one line to the list in `src/components/ToolRenderer.tsx`.
-5. Optionally add a worked example in `src/lib/examples.ts` and a sample in `src/lib/samples.ts`.
-
-The homepage, command palette, footer, About page and sitemap update automatically. `npm run test` checks that every tool in the list has a component and is registered.
-
-## Privacy and monetization notes
-
-- The tools never send input anywhere. The only things saved in the browser are the theme, favorite tool names and recently used tool names (never what you type). The privacy page describes this accurately. **If you add analytics or ads later, update `src/app/privacy/page.tsx` first.**
-- Safety measures: the Markdown preview escapes all text and shows raw HTML as text, loads no images, and only links http, https and mailto addresses (covered by tests). The password, UUID and random-number tools use `crypto.getRandomValues`, never `Math.random`. The JWT decoder only decodes and says clearly that it does not verify signatures.
-- The code has no ad or analytics hooks, by design. Ethical ad networks or a premium tier can be added later; reserve fixed-height ad slots to avoid layout shift.
-- Icons and the social image are files served from your own site. No third-party requests are involved.
-
-## Dark theme
-
-The button at the top left switches themes. The first visit follows your device’s light/dark setting; after you click, your choice is remembered in your browser’s local storage (described on the Privacy page). To change colours, edit the two blocks of variables at the top of `src/app/globals.css` (`:root` for light, `.dark` for dark).
-
-## SEO and indexing: how it's set up
-
-- **One domain setting.** Every canonical URL, Open Graph URL, sitemap entry and the `robots.txt` sitemap line is built from `src/lib/site.ts`, which defaults to `https://vexiqora.vercel.app`.
-- **Previews are kept out of search.** Vercel *Preview* deployments (test copies on other addresses) send `noindex` and a `Disallow: /` robots.txt, so they can’t compete with the real site. The Production deployment allows normal crawling.
-- **Titles.** Pages use `<Page> — Vexiqora`; the homepage uses `Vexiqora — Free Online Developer Tools`. Change the wording in `src/lib/site.ts` and `src/lib/tools.ts`.
-- **Sitemap** lists the homepage, the four tools, About and Privacy. Contact is added only when `NEXT_PUBLIC_CONTACT_EMAIL` is set, because the page has nothing useful until then.
-- **Social profiles** are not set. If you want them, add real URLs to `socialProfiles` and your handle to `twitterHandle` in `src/lib/site.ts`.
-
-## After you deploy: Search Console (manual steps)
-
-Because the address ends in `.vercel.app`, you don’t control its DNS, so use a **URL prefix** property (not a Domain property).
-
-1. Open https://search.google.com/search-console and choose **Add property → URL prefix**, then enter `https://vexiqora.vercel.app`.
-2. Choose the **HTML tag** verification method. Copy only the `content` value of the tag it shows.
-3. In Vercel, add it as the environment variable `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` (Production), redeploy, then select **Verify** in Search Console.
-4. Under **Sitemaps**, submit `https://vexiqora.vercel.app/sitemap.xml`.
-5. Use **URL inspection** on the homepage and each tool page, then **Request indexing**.
-6. Check `https://vexiqora.vercel.app/robots.txt` shows `Allow: /`.
-7. Indexing and ranking are decided by the search engine and can take days or weeks. Nothing in this project can guarantee them.
-
-## Checking a deployed site by hand
-
-- `/favicon.ico`, `/icon.svg`, `/apple-icon.png` and `/og-image.png` each open an image.
-- View the page source of a tool page: the `<title>`, `<link rel="canonical">`, `og:image` and `twitter:card` tags should all use your domain.
-- Paste a tool URL into https://www.opengraph.xyz or the Facebook Sharing Debugger / LinkedIn Post Inspector to preview the share card (these services may cache; use their "re-scrape" option after changes).
+## Known limitations
+- The regex tester runs on the page; an extremely slow pattern can freeze the tab for a while.
+- Markdown supports a safe subset (no tables or nested lists).
+- Sentence counts and reading time are estimates.
+- Contact email and social profiles are not set, because no real values were provided.
