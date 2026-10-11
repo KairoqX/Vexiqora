@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Button from "../Button";
 import CopyButton from "../CopyButton";
+import DownloadButton from "../DownloadButton";
 import Notice from "../Notice";
 import TextArea from "../TextArea";
+import { samples } from "@/lib/samples";
 import { formatJson, minifyJson, validateJson, type IndentOption, type JsonResult } from "@/lib/json";
 
 type Status = { kind: "success" | "error"; text: string } | null;
@@ -52,7 +54,18 @@ export default function JsonTool() {
           </select>
         </div>
         <div className="flex items-center gap-2 sm:ml-auto">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setInput(samples.json);
+              setOutput("");
+              setStatus(null);
+            }}
+          >
+            Load sample
+          </Button>
           <CopyButton text={output} label="Copy output" />
+          <DownloadButton filename="formatted.json" content={output} mimeType="application/json" />
           <Button variant="ghost" onClick={clearAll} disabled={input === "" && output === "" && !status}>Clear</Button>
         </div>
       </div>

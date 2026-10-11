@@ -7,6 +7,7 @@ import CopyButton from "../CopyButton";
 import Notice from "../Notice";
 import TextArea from "../TextArea";
 import { decodeBase64, encodeBase64 } from "@/lib/base64";
+import { samples } from "@/lib/samples";
 
 type Mode = "encode" | "decode";
 
@@ -62,6 +63,9 @@ export default function Base64Tool() {
         <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
           <Button onClick={swapDirection} disabled={result.output === ""}>
             <ArrowLeftRight size={16} aria-hidden /> Use output as input
+          </Button>
+          <Button variant="ghost" onClick={() => setInput(mode === "encode" ? samples.base64Text : encodeBase64(samples.base64Text))}>
+            Load sample
           </Button>
           <CopyButton text={result.output} label="Copy output" />
           <Button variant="ghost" onClick={() => setInput("")} disabled={input === ""}>Clear</Button>

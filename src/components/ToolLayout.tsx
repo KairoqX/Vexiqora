@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { examples } from "@/lib/examples";
 import { absoluteUrl } from "@/lib/site";
-import { toolPath, tools, type Tool } from "@/lib/tools";
+import ToolActions from "./ToolActions";
+import { toolPath, toolsInCategory, type Tool } from "@/lib/tools";
 
 // Shared page frame for every tool: heading, the tool itself, then helpful written content.
 export default function ToolLayout({ tool, children }: { tool: Tool; children: ReactNode }) {
-  const others = tools.filter((t) => t.slug !== tool.slug);
+  // Related tools: the others in the same category (the full list is on the homepage and in the footer).
+  const others = toolsInCategory(tool.category).filter((t) => t.slug !== tool.slug);
   const example = examples[tool.slug];
 
   // Structured data helps search engines understand the page. It contains no ratings or reviews.
@@ -35,7 +37,10 @@ export default function ToolLayout({ tool, children }: { tool: Tool; children: R
         </ol>
       </nav>
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{tool.name}</h1>
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
+        <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{tool.name}</h1>
+        <ToolActions slug={tool.slug} name={tool.name} />
+      </div>
       <p className="mt-2 max-w-2xl text-muted">{tool.summary} Everything runs in your browser, so your input isn’t uploaded.</p>
 
       <div className="mt-8">{children}</div>
@@ -86,8 +91,9 @@ export default function ToolLayout({ tool, children }: { tool: Tool; children: R
             </ul>
           </section>
           <section aria-labelledby="more-tools" className="mt-8">
-            <h2 id="more-tools" className="text-xl font-semibold">More tools</h2>
+            <h2 id="more-tools" className="text-xl font-semibold">Related tools</h2>
             <ul className="mt-4 space-y-2">
+              {others.length === 0 && <li className="text-muted">There are no other tools in this category yet.</li>}
               {others.map((t) => (
                 <li key={t.slug}>
                   <Link href={toolPath(t)} className="font-medium text-accent-text underline underline-offset-4 hover:text-ink">
@@ -97,6 +103,11 @@ export default function ToolLayout({ tool, children }: { tool: Tool; children: R
                 </li>
               ))}
             </ul>
+            <p className="mt-4 text-sm">
+              <Link href="/#tools" className="font-medium text-accent-text underline underline-offset-4 hover:text-ink">
+                Browse all tools
+              </Link>
+            </p>
           </section>
         </div>
       </div>

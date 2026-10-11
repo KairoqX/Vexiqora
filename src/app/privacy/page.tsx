@@ -18,13 +18,28 @@ export default function PrivacyPage() {
       <ul>
         <li>No user accounts and no database.</li>
         <li>No analytics, advertising or tracking scripts.</li>
-        <li>No cookies set by Vexiqora’s own code. (The only thing it stores is your theme choice, described below.)</li>
+        <li>No cookies set by Vexiqora’s own code. (The only things it stores are your preferences, described below.)</li>
         <li>No requests to third-party font services. Fonts are served from this site.</li>
       </ul>
-      <h2>Your theme choice</h2>
+      <h2>What is saved in your browser</h2>
       <p>
-        If you use the theme button, Vexiqora saves your light or dark choice in your browser’s local storage so the next visit looks the same. It is stored only on your device, is not a cookie, and is not sent to Vexiqora. Clearing your browser data removes it.
+        To remember your preferences, Vexiqora uses your browser’s local storage. It is stored only on your device, is not a cookie, and is not sent to Vexiqora. Three things are saved:
       </p>
+      <ul>
+        <li>your light or dark theme choice, if you use the theme button;</li>
+        <li>your favorite tools, if you mark any (only the tool names are saved);</li>
+        <li>your recently used tools, so the homepage can list them (only the tool names are saved; the “Clear recent” button on the homepage removes them).</li>
+      </ul>
+      <p>
+        Nothing you type or paste into a tool is saved. Clearing your browser data removes the saved preferences.
+      </p>
+      <h2>Notes about specific tools</h2>
+      <ul>
+        <li>The password and UUID generators create their results on your device using your browser’s secure random number generator. Results are not stored or sent.</li>
+        <li>The JWT decoder only decodes a token. It does not verify it and it does not send it anywhere.</li>
+        <li>The Markdown preview shows any HTML you type as plain text and never loads images, so a preview can’t make your browser contact other sites.</li>
+        <li>Download buttons create the file in your browser; nothing is uploaded.</li>
+      </ul>
       <h2>Hosting</h2>
       <p>
         Like most websites, Vexiqora is delivered by a hosting provider. Hosting providers typically keep standard technical logs of requests, such as IP address, the page requested and browser type, for security and operations. Those logs are handled under the host’s own policies, and Vexiqora doesn’t use them to identify visitors.

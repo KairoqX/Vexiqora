@@ -115,3 +115,59 @@ export function diffLines(oldText: string, newText: string): DiffResult {
 
   return { lines, added, removed, unchanged, identical: added === 0 && removed === 0 };
 }
+
+export interface SideBySideRow {
+  left: DiffLine | null;
+  right: DiffLine | null;
+}
+
+/** Lines up removed lines (left) against the added lines that replaced them (right). */
+export function toSideBySide(lines: DiffLine[]): SideBySideRow[] {
+  const rows: SideBySideRow[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.type === "unchanged") {
+      rows.push({ left: line, right: line });
+      i++;
+      continue;
+    }
+    const removed: DiffLine[] = [];
+    const added: DiffLine[] = [];
+    while (i < lines.length && lines[i].type === "removed") removed.push(lines[i++]);
+    while (i < lines.length && lines[i].type === "added") added.push(lines[i++]);
+    for (let k = 0; k < Math.max(removed.length, added.length); k++) {
+      rows.push({ left: removed[k] ?? null, right: added[k] ?? null });
+    }
+  }
+  return rows;
+}
+
+export interface InlineDiff {
+  prefix: string;
+  oldMiddle: string;
+  newMiddle: string;
+  suffix: string;
+}
+
+const isHighSurrogate = (code: number) => code >= 0xd800 && code <= 0xdbff;
+const isLowSurrogate = (code: number) => code >= 0xdc00 && code <= 0xdfff;
+
+/** Finds which part of two similar lines changed: the text between their shared start and shared end. */
+export function inlineDiff(oldLine: string, newLine: string): InlineDiff {
+  let start = 0;
+  const shortest = Math.min(oldLine.length, newLine.length);
+  while (start < shortest && oldLine[start] === newLine[start]) start++;
+  if (start > 0 && isHighSurrogate(oldLine.charCodeAt(start - 1))) start--; // never split an emoji
+
+  let end = 0;
+  while (end < shortest - start && oldLine[oldLine.length - 1 - end] === newLine[newLine.length - 1 - end]) end++;
+  if (end > 0 && isLowSurrogate(oldLine.charCodeAt(oldLine.length - end))) end--;
+
+  return {
+    prefix: oldLine.slice(0, start),
+    oldMiddle: oldLine.slice(start, oldLine.length - end),
+    newMiddle: newLine.slice(start, newLine.length - end),
+    suffix: oldLine.slice(oldLine.length - end),
+  };
+}

@@ -34,9 +34,10 @@ function describeError(input: string, err: unknown): string {
   return `Invalid JSON. ${raw}`;
 }
 
-type Parsed = { ok: true; value: unknown } | { ok: false; error: string };
+export type ParsedJson = { ok: true; value: unknown } | { ok: false; error: string };
 
-function parse(input: string): Parsed {
+/** Reads JSON text safely. JSON.parse only reads data; it never runs it as code. */
+export function parseJson(input: string): ParsedJson {
   // Strip a leading byte-order mark that some editors add to files.
   const text = input.replace(/^\uFEFF/, "");
   if (text.trim() === "") return { ok: false, error: EMPTY_MESSAGE };
@@ -48,14 +49,14 @@ function parse(input: string): Parsed {
 }
 
 export function formatJson(input: string, indent: IndentOption): JsonResult {
-  const parsed = parse(input);
+  const parsed = parseJson(input);
   if (!parsed.ok) return parsed;
   const space = indent === "tab" ? "\t" : Number(indent);
   return { ok: true, output: JSON.stringify(parsed.value, null, space), message: "Formatted successfully." };
 }
 
 export function minifyJson(input: string): JsonResult {
-  const parsed = parse(input);
+  const parsed = parseJson(input);
   if (!parsed.ok) return parsed;
   return { ok: true, output: JSON.stringify(parsed.value), message: "Minified successfully." };
 }
@@ -72,7 +73,12 @@ export function describeValue(value: unknown): string {
 }
 
 export function validateJson(input: string): JsonResult {
-  const parsed = parse(input);
+  const parsed = parseJson(input);
   if (!parsed.ok) return parsed;
   return { ok: true, output: null, message: `Valid JSON. The top level is ${describeValue(parsed.value)}.` };
+}
+
+/** Size of the text in bytes when saved as UTF-8 (what a file or network request would use). */
+export function sizeInBytes(text: string): number {
+  return new TextEncoder().encode(text).length;
 }

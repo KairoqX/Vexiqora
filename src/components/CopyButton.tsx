@@ -7,11 +7,13 @@ import Button from "./Button";
 interface CopyButtonProps {
   text: string;
   label?: string;
+  /** A more specific name for screen readers when a page has several Copy buttons. */
+  ariaLabel?: string;
 }
 
 // "use client" means this component runs in the browser, which it needs
 // because copying uses the browser's clipboard.
-export default function CopyButton({ text, label = "Copy" }: CopyButtonProps) {
+export default function CopyButton({ text, label = "Copy", ariaLabel }: CopyButtonProps) {
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -31,7 +33,7 @@ export default function CopyButton({ text, label = "Copy" }: CopyButtonProps) {
 
   return (
     <>
-      <Button onClick={handleCopy} disabled={text === ""}>
+      <Button onClick={handleCopy} disabled={text === ""} aria-label={ariaLabel}>
         {status === "copied" ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
         {status === "copied" ? "Copied" : label}
       </Button>

@@ -1,25 +1,20 @@
 import Link from "next/link";
+import CommandPalette from "./CommandPalette";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
-import { toolPath, tools } from "@/lib/tools";
 
-const linkClass = "rounded-md px-2.5 py-2 text-sm text-muted hover:text-ink";
+const linkClass = "hidden rounded-md px-2.5 py-2 text-sm text-muted hover:text-ink sm:block";
 
 export default function Navbar() {
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <Logo />
         </div>
-        <nav aria-label="Main" className="flex items-center gap-0.5">
-          {/* The individual tool links appear on wider screens; phones get the shorter menu. */}
-          {tools.map((tool) => (
-            <Link key={tool.slug} href={toolPath(tool)} className={`${linkClass} hidden xl:block`}>
-              {tool.shortName}
-            </Link>
-          ))}
+        <nav aria-label="Main" className="flex items-center gap-1">
+          <CommandPalette />
           <Link href="/#tools" className={linkClass}>
             All tools
           </Link>

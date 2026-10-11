@@ -7,8 +7,20 @@ import { formatJson } from "../src/lib/json";
 import { diffLines } from "../src/lib/diff";
 import { encodeBase64, decodeBase64 } from "../src/lib/base64";
 import { formatReadingTime, getTextStats } from "../src/lib/counter";
-import { absoluteUrl, siteConfig } from "../src/lib/site";
+import { absoluteUrl, resolveSiteUrl, siteConfig } from "../src/lib/site";
 import { buildMetadata, pageTitle } from "../src/lib/metadata";
+import { minifyJson } from "../src/lib/json";
+import { jsonToCsv } from "../src/lib/csv";
+import { encodeUrl, encodeHtmlEntities } from "../src/lib/textCodec";
+import { describeDate } from "../src/lib/timestamp";
+import { decodeJwt } from "../src/lib/jwt";
+import { runRegex } from "../src/lib/regex";
+import { renderMarkdown } from "../src/lib/markdown";
+import { convertCase } from "../src/lib/caseConvert";
+import { parseColor, toRgbString, toHslString } from "../src/lib/color";
+import { gradientCss } from "../src/lib/gradient";
+import { boxShadowCss, defaultLayer } from "../src/lib/boxShadow";
+import { borderRadiusCss } from "../src/lib/borderRadius";
 
 const root = path.resolve(__dirname, "..");
 
@@ -40,6 +52,7 @@ test("example: word counter output is exactly what the tool produces", () => {
     `Words: ${s.words}`,
     `Characters: ${s.characters}`,
     `Characters (no spaces): ${s.charactersNoSpaces}`,
+    `Sentences: ${s.sentences}`,
     `Lines: ${s.lines}`,
     `Paragraphs: ${s.paragraphs}`,
     `Reading time (estimate): ${formatReadingTime(s.words)}`,
@@ -51,7 +64,7 @@ test("example: word counter output is exactly what the tool produces", () => {
 test("site config: description and title match the agreed wording", () => {
   assert.equal(
     siteConfig.description,
-    "Free online developer tools for formatting JSON, comparing text, encoding Base64, and counting words.",
+    "Free online developer tools for working with JSON, text, encodings, colors and more. Everything runs in your browser, and your input isn’t uploaded.",
   );
   assert.equal(siteConfig.homeTitle, "Vexiqora — Free Online Developer Tools");
 });
@@ -144,12 +157,86 @@ test("assets: no static robots.txt or sitemap.xml that would conflict with the g
   }
 });
 
-test("routes: every tool in the registry has a page file", () => {
+test("routes: every tool in the registry is fully wired up", () => {
   const registry = fs.readFileSync(path.join(root, "src/lib/tools.ts"), "utf8");
-  const slugs = [...registry.matchAll(/slug: "([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(slugs.length, 4);
+  const renderer = fs.readFileSync(path.join(root, "src/components/ToolRenderer.tsx"), "utf8");
+  const slugs = [...registry.matchAll(/^\s+slug: "([^"]+)"/gm)].map((m) => m[1]);
+  assert.equal(slugs.length, 23);
+  assert.equal(new Set(slugs).size, slugs.length, "slugs are unique");
   for (const slug of slugs) {
-    assert.ok(fs.existsSync(path.join(root, "src/app/tools", slug, "page.tsx")), `missing page for ${slug}`);
-    assert.ok(examples[slug], `missing example for ${slug}`);
+    assert.match(slug, /^[a-z0-9]+(-[a-z0-9]+)*$/, `${slug} is a clean URL segment`);
+    const key = slug.includes("-") ? `"${slug}"` : slug;
+    const match = renderer.match(new RegExp(`${key}: dynamic\\(\\(\\) => import\\("\\./tools/(\\w+)"\\), \\{ loading: ToolLoading \\}\\)`));
+    assert.ok(match, `ToolRenderer has no entry for ${slug}`);
+    assert.ok(fs.existsSync(path.join(root, "src/components/tools", `${match[1]}.tsx`)), `component file for ${slug} is missing`);
   }
+  // the four original tools keep their original URLs
+  for (const slug of ["json-formatter", "text-diff", "base64", "word-counter"]) assert.ok(slugs.includes(slug), slug);
+  assert.ok(fs.existsSync(path.join(root, "src/app/tools/[slug]/page.tsx")));
+});
+
+test("registry: unique titles and descriptions, and a category for every tool", () => {
+  const registry = fs.readFileSync(path.join(root, "src/lib/tools.ts"), "utf8");
+  const grab = (field: string) => [...registry.matchAll(new RegExp(`^\\s+${field}:\\s*\\n?\\s*"([^"]+)"`, "gm"))].map((m) => m[1]);
+  const titles = grab("seoTitle");
+  const descriptions = grab("seoDescription");
+  assert.equal(titles.length, 23);
+  assert.equal(descriptions.length, 23);
+  assert.equal(new Set(titles).size, 23, "titles are unique");
+  assert.equal(new Set(descriptions).size, 23, "descriptions are unique");
+  for (const d of descriptions) assert.ok(d.length >= 80 && d.length <= 200, `description length ${d.length}: ${d}`);
+  const categories = new Set([...registry.matchAll(/^\s+category: "([^"]+)"/gm)].map((m) => m[1]));
+  assert.deepEqual([...categories].sort(), ["Data & JSON", "Design", "Generators", "Text", "Web development"]);
+});
+
+// ---------- examples for the newer tools are produced by the real tool logic ----------
+
+test("example: JSON minifier and JSON to CSV", () => {
+  const min = minifyJson(examples["json-minifier"].input);
+  assert.ok(min.ok && min.output === examples["json-minifier"].output);
+  const csv = jsonToCsv(examples["json-csv"].input);
+  assert.ok(csv.ok && csv.output === examples["json-csv"].output);
+});
+
+test("example: URL and HTML entity encoding", () => {
+  const url = encodeUrl(examples["url-encoder"].input, "component");
+  assert.ok(url.ok && url.output === examples["url-encoder"].output);
+  assert.equal(encodeHtmlEntities(examples["html-entities"].input), examples["html-entities"].output);
+});
+
+test("example: timestamp rows", () => {
+  const rows = describeDate(new Date(1700000000 * 1000), new Date(), "UTC");
+  const get = (label: string) => rows.find((r) => r.label === label)?.value;
+  const text = ["ISO 8601 (UTC)", "UTC", "Unix seconds", "Unix milliseconds"].map((l) => `${l}: ${get(l)}`).join("\n");
+  assert.equal(text, examples["timestamp-converter"].output);
+});
+
+test("example: JWT decoder shows exactly what the tool decodes", () => {
+  const r = decodeJwt(examples["jwt-decoder"].input);
+  assert.ok(r.ok);
+  assert.equal(`${r.headerJson}\n\n${r.payloadJson}`, examples["jwt-decoder"].output);
+});
+
+test("example: regex matches, markdown and case converter", () => {
+  const [pattern, text] = examples["regex-tester"].input.replace("Pattern: ", "").split("\nText: ");
+  const rx = runRegex(pattern, "g", text);
+  assert.ok(rx.ok);
+  const lines = rx.matches.map((m, i) => `Match ${i + 1} at ${m.index}: ${m.text} (groups: ${m.groups.join(", ")})`).join("\n");
+  assert.equal(lines, examples["regex-tester"].output);
+  assert.equal(renderMarkdown(examples["markdown-editor"].input), examples["markdown-editor"].output);
+  const text2 = examples["case-converter"].input;
+  const cases = `camelCase: ${convertCase(text2, "camel")}\nsnake_case: ${convertCase(text2, "snake")}\nTitle Case: ${convertCase(text2, "title")}`;
+  assert.equal(cases, examples["case-converter"].output);
+});
+
+test("example: color, gradient, box shadow and border radius", () => {
+  const c = parseColor(examples["color-converter"].input);
+  assert.ok(c.ok);
+  assert.equal(`${toRgbString(c.color)}\n${toHslString(c.color)}`, examples["color-converter"].output);
+  const g = gradientCss({ type: "linear", angle: 90, stops: [{ color: "#1d6b57", position: 0 }, { color: "#5fd0ae", position: 100 }] });
+  assert.ok(g.ok && g.css === examples["gradient-generator"].output);
+  const s = boxShadowCss([defaultLayer]);
+  assert.ok(s.ok && s.css === examples["box-shadow-generator"].output);
+  const r = borderRadiusCss({ unit: "px", horizontal: [8, 16, 8, 16], vertical: null });
+  assert.ok(r.ok && r.css === examples["border-radius-generator"].output);
 });

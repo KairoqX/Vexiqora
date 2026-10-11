@@ -24,7 +24,7 @@ export default function HomePage() {
             Developer tools that run in your browser
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted">
-            Format JSON, compare text, encode Base64 and count words. Your input stays on your device.
+            Format JSON, decode a JWT, test a regex, convert colors, generate passwords and more. Your input stays on your device.
           </p>
           <div className="mt-8">
             <ToolBrowser />

@@ -4,6 +4,27 @@
 
 const DEFAULT_URL = "https://vexiqora.vercel.app";
 
+/**
+ * Turns the NEXT_PUBLIC_SITE_URL setting into a clean address like "https://example.com".
+ * A missing "https://" is added. If the value is unusable (for example a typo such as
+ * "https//:example.com"), a warning is printed and the default is used, so one typo
+ * can't break the whole build.
+ */
+export function resolveSiteUrl(raw: string | undefined): string {
+  const value = raw?.trim();
+  if (!value) return DEFAULT_URL;
+  const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const parsed = new URL(candidate);
+    // A real address has a dot in its host name (or is localhost). This rejects typos like "https//:x.com".
+    if (!parsed.hostname.includes(".") && parsed.hostname !== "localhost") throw new Error("bad host");
+    return parsed.origin; // drops any trailing slash or path
+  } catch {
+    console.warn(`NEXT_PUBLIC_SITE_URL is not a valid address ("${value}"). Using ${DEFAULT_URL} instead.`);
+    return DEFAULT_URL;
+  }
+}
+
 export const siteConfig = {
   name: "Vexiqora",
   tagline: "Free Online Developer Tools",
@@ -11,10 +32,10 @@ export const siteConfig = {
   homeTitle: "Vexiqora — Free Online Developer Tools",
   titleSeparator: " — ",
   description:
-    "Free online developer tools for formatting JSON, comparing text, encoding Base64, and counting words.",
+    "Free online developer tools for working with JSON, text, encodings, colors and more. Everything runs in your browser, and your input isn’t uploaded.",
 
   // Production URL, without a trailing slash. Everything else is built from this.
-  url: (process.env.NEXT_PUBLIC_SITE_URL?.trim() || DEFAULT_URL).replace(/\/+$/, ""),
+  url: resolveSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
 
   // Only fill these in with real values. Nothing is shown or output while they are empty.
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "",

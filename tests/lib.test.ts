@@ -168,7 +168,7 @@ test("base64: invalid input returns errors instead of throwing", () => {
 
 // ---------- Counter ----------
 test("counter: empty text is all zeros", () => {
-  assert.deepEqual(getTextStats(""), { words: 0, characters: 0, charactersNoSpaces: 0, lines: 0, paragraphs: 0 });
+  assert.deepEqual(getTextStats(""), { words: 0, characters: 0, charactersNoSpaces: 0, sentences: 0, lines: 0, paragraphs: 0 });
 });
 
 test("counter: counts words, characters, lines and paragraphs", () => {
