@@ -5,36 +5,40 @@
 /* Colours as "R G B" numbers so Tailwind can add transparency to them. */
 :root {
   color-scheme: light;
-  --canvas: 247 248 249;
+  --canvas: 242 242 242; /* page background */
   --surface: 255 255 255;
-  --ink: 31 35 40;
-  --muted: 89 97 107;
-  --line: 221 225 230;
-  --accent: 29 107 87;
-  --accent-strong: 21 82 66;
-  --accent-soft: 232 243 239;
-  --accent-text: 29 107 87;
-  --danger: 164 38 44;
-  --danger-soft: 251 236 235;
-  --added-bg: 228 244 234;
-  --removed-bg: 251 233 232;
+  --ink: 17 17 17;
+  --muted: 92 92 92;
+  --line: 214 214 214;
+  --line-strong: 133 133 133;
+  --accent: 17 17 17; /* in this monochrome design the accent is simply ink */
+  --accent-strong: 51 51 51;
+  --accent-soft: 232 232 232;
+  --accent-text: 17 17 17;
+  --on-accent: 255 255 255;
+  --danger: 160 32 32; /* errors keep a restrained red so they stand out from normal text */
+  --danger-soft: 251 236 236;
+  --added-bg: 220 220 220;
+  --removed-bg: 236 236 236;
 }
 
 .dark {
   color-scheme: dark; /* makes scrollbars and form controls dark too */
-  --canvas: 15 18 20;
-  --surface: 23 27 31;
-  --ink: 232 234 237;
-  --muted: 154 163 173;
-  --line: 44 51 58;
-  --accent: 35 128 101;
-  --accent-strong: 29 107 87;
-  --accent-soft: 18 48 42;
-  --accent-text: 95 208 174;
+  --canvas: 10 10 10;
+  --surface: 22 22 22;
+  --ink: 238 238 238;
+  --muted: 158 158 158;
+  --line: 52 52 52;
+  --line-strong: 115 115 115;
+  --accent: 238 238 238;
+  --accent-strong: 204 204 204;
+  --accent-soft: 38 38 38;
+  --accent-text: 238 238 238;
+  --on-accent: 10 10 10;
   --danger: 255 138 143;
   --danger-soft: 58 26 28;
-  --added-bg: 18 48 31;
-  --removed-bg: 58 26 28;
+  --added-bg: 56 56 56;
+  --removed-bg: 34 34 34;
 }
 
 @layer base {
@@ -54,7 +58,7 @@
     @apply focus:border-accent;
   }
   ::selection {
-    @apply bg-accent-soft;
+    @apply bg-ink/20;
   }
 }
 

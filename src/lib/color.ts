@@ -42,7 +42,7 @@ export function rgbToHsl(r: number, g: number, b: number): { h: number; s: numbe
 
 export function parseColor(input: string): ColorResult {
   const text = input.trim().toLowerCase();
-  if (text === "") return { ok: false, error: "Enter a color, such as #1d6b57, rgb(29, 107, 87) or hsl(165, 57%, 27%)." };
+  if (text === "") return { ok: false, error: "Enter a color, such as #111111, rgb(17, 17, 17) or hsl(0, 0%, 7%)." };
 
   const hex = text.match(/^#?([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/);
   if (hex) {
@@ -80,7 +80,7 @@ export function parseColor(input: string): ColorResult {
     return { ok: true, color: { ...hslToRgb(hue, s, l), a: round2(clamp(alpha, 0, 1)) } };
   }
 
-  return { ok: false, error: "Unrecognised color. Use a HEX value (#1d6b57), rgb(…) or hsl(…)." };
+  return { ok: false, error: "Unrecognised color. Use a HEX value (#111111), rgb(…) or hsl(…)." };
 }
 
 const hex2 = (n: number) => n.toString(16).padStart(2, "0");

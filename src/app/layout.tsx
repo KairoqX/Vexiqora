@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -12,6 +12,14 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400"], variable: "--f
 
 // Runs before the page is drawn: use the saved theme, or else the device's light/dark setting.
 const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
+
+// Colours the browser's address bar on phones to match the page.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f2f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
+};
 
 export const metadata: Metadata = {
   // All relative URLs in metadata (canonical links, Open Graph) are built from this.

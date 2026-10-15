@@ -5,7 +5,7 @@ import { useId } from "react";
 // Small labelled form controls shared by the tools. Every control has a real <label>.
 
 const inputClass =
-  "h-10 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink placeholder:text-muted";
+  "h-10 w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-ink placeholder:text-muted";
 
 interface TextInputProps {
   label: string;
@@ -117,7 +117,7 @@ interface SegmentedProps<T extends string> {
 export function Segmented<T extends string>({ legend, value, onChange, options }: SegmentedProps<T>) {
   const name = useId();
   return (
-    <fieldset className="inline-flex rounded-md border border-line bg-canvas p-1">
+    <fieldset className="inline-flex rounded-md border border-line-strong bg-canvas p-1">
       <legend className="sr-only">{legend}</legend>
       {options.map((option) => (
         <label

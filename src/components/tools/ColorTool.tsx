@@ -8,7 +8,7 @@ import { TextInput } from "../Fields";
 import { parseColor, toHex, toHslString, toOpaqueHex, toRgbString } from "@/lib/color";
 
 export default function ColorTool() {
-  const [text, setText] = useState("#1d6b57");
+  const [text, setText] = useState("#111111");
   const pickerId = useId();
   const parsed = parseColor(text);
 
@@ -23,7 +23,7 @@ export default function ColorTool() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
-        <TextInput label="Color" value={text} onChange={setText} placeholder="#1d6b57, rgb(29, 107, 87) or hsl(165, 57%, 27%)" mono hint="HEX (3, 4, 6 or 8 digits), rgb() / rgba(), or hsl() / hsla()." />
+        <TextInput label="Color" value={text} onChange={setText} placeholder="#111111, rgb(17, 17, 17) or hsl(0, 0%, 7%)" mono hint="HEX (3, 4, 6 or 8 digits), rgb() / rgba(), or hsl() / hsla()." />
 
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
@@ -33,10 +33,10 @@ export default function ColorTool() {
               type="color"
               value={parsed.ok ? toOpaqueHex(parsed.color) : "#000000"}
               onChange={(e) => setText(e.target.value)}
-              className="h-10 w-20 cursor-pointer rounded-md border border-line bg-surface p-1"
+              className="h-10 w-20 cursor-pointer rounded-md border border-line-strong bg-surface p-1"
             />
           </div>
-          <Button variant="ghost" onClick={() => setText("#1d6b57")}>Reset</Button>
+          <Button variant="ghost" onClick={() => setText("#111111")}>Reset</Button>
           <Button variant="ghost" onClick={() => setText("")} disabled={text === ""}>Clear</Button>
         </div>
 

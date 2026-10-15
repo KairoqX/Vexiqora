@@ -268,7 +268,7 @@ export const tools: Tool[] = [
       "Convert colors between HEX, RGB and HSL, including transparency, with a live preview and a color picker. Runs in your browser.",
     about:
       "Designers and developers write the same color in different ways. Enter a color in any of the three formats, or pick one, and see it in all of them, ready to copy into your CSS.",
-    howTo: ["Type a color such as #1d6b57, rgb(29, 107, 87) or hsl(165, 57%, 27%), or use the color picker.", "Check the preview swatch.", "Copy the format you need."],
+    howTo: ["Type a color such as #111111, rgb(17, 17, 17) or hsl(0, 0%, 7%), or use the color picker.", "Check the preview swatch.", "Copy the format you need."],
     goodToKnow: ["Short HEX forms like #fff and forms with transparency like #ff000080 are accepted.", "Values outside the allowed range are adjusted to the nearest valid value, as CSS does.", "HSL values are rounded to whole numbers, so converting back and forth can change a value by one."],
   },
   {

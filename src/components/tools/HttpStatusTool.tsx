@@ -22,7 +22,7 @@ export default function HttpStatusTool() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by code, name or meaning, for example 404 or redirect"
           autoComplete="off"
-          className="h-11 w-full rounded-md border border-line bg-surface pl-10 pr-3 text-base placeholder:text-muted"
+          className="h-11 w-full rounded-md border border-line-strong bg-surface pl-10 pr-3 text-base placeholder:text-muted"
         />
       </div>
 

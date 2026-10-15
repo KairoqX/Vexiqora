@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-// Switches between the light and dark theme. The theme is just a "dark" class on the <html>
-// element; the colours for each theme are defined in globals.css.
-// The first choice follows your device setting; after you click, your choice is remembered
-// in this browser (see the Privacy page).
+// A black-and-white switch for the light and dark theme. The theme is just a "dark" class on the
+// <html> element; the colours for each theme are defined in globals.css.
+// The first visit follows your device setting; after you click, your choice is remembered in this
+// browser (see the Privacy page).
 export default function ThemeToggle() {
   // null until the page has loaded in the browser, because the server can't know the theme.
   const [isDark, setIsDark] = useState<boolean | null>(null);
@@ -29,15 +29,19 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={toggle}
-      aria-pressed={isDark === null ? undefined : isDark}
+      role="switch"
+      aria-checked={isDark === true}
       aria-label="Dark theme"
       title="Toggle dark theme"
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-ink hover:bg-canvas"
+      onClick={toggle}
+      className="inline-flex h-8 w-[3.75rem] shrink-0 items-center rounded-full border-2 border-ink bg-ink p-0.5"
     >
-      {/* Both icons are in the page; CSS shows the right one, so there is no flash on load. */}
-      <Moon size={18} aria-hidden className="dark:hidden" />
-      <Sun size={18} aria-hidden className="hidden dark:block" />
+      {/* The knob slides right in dark mode. Both icons are in the page and CSS shows the right
+          one, so there is no flash on load. */}
+      <span className="pointer-events-none flex h-6 w-6 items-center justify-center rounded-full bg-canvas text-ink transition-transform duration-200 dark:translate-x-7">
+        <Sun size={14} aria-hidden className="dark:hidden" />
+        <Moon size={14} aria-hidden className="hidden dark:block" />
+      </span>
     </button>
   );
 }

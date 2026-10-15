@@ -16,8 +16,8 @@ interface StopState {
 }
 
 const INITIAL: StopState[] = [
-  { id: 1, color: "#1d6b57", position: 0 },
-  { id: 2, color: "#5fd0ae", position: 100 },
+  { id: 1, color: "#111111", position: 0 },
+  { id: 2, color: "#e5e5e5", position: 100 },
 ];
 
 export default function GradientTool() {
@@ -50,7 +50,7 @@ export default function GradientTool() {
             <div key={stop.id} className="flex items-end gap-3">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor={`stop-color-${stop.id}`} className="text-xs text-muted">Color {index + 1}</label>
-                <input id={`stop-color-${stop.id}`} type="color" value={stop.color} onChange={(e) => update(stop.id, { color: e.target.value })} className="h-10 w-16 cursor-pointer rounded-md border border-line bg-surface p-1" />
+                <input id={`stop-color-${stop.id}`} type="color" value={stop.color} onChange={(e) => update(stop.id, { color: e.target.value })} className="h-10 w-16 cursor-pointer rounded-md border border-line-strong bg-surface p-1" />
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                 <label htmlFor={`stop-pos-${stop.id}`} className="text-xs text-muted">Position {index + 1} ({stop.position}%)</label>

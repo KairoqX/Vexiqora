@@ -1,14 +1,23 @@
 import Link from "next/link";
+import { LOGO_MARK } from "@/lib/logoMark";
 import { siteConfig } from "@/lib/site";
+
+const HEIGHT = 28; // the mark's height in pixels; the width follows its proportions
 
 export default function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2 rounded-md font-semibold tracking-tight text-ink" aria-label={`${siteConfig.name} home`}>
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <rect width="32" height="32" rx="7" fill="#1d6b57" />
-        <path d="M13 9 6 16l7 7M19 9l7 7-7 7" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+    <Link href="/" className="flex items-center gap-2.5 rounded-md text-ink" aria-label={`${siteConfig.name} home`}>
+      {/* currentColor makes the mark black on the light theme and white on the dark theme. */}
+      <svg
+        viewBox={`0 0 ${LOGO_MARK.width} ${LOGO_MARK.height}`}
+        width={Math.round((HEIGHT * LOGO_MARK.width) / LOGO_MARK.height)}
+        height={HEIGHT}
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d={LOGO_MARK.d} />
       </svg>
-      <span className="text-lg">{siteConfig.name}</span>
+      <span className="text-xl font-bold tracking-tight">{siteConfig.name}</span>
     </Link>
   );
 }

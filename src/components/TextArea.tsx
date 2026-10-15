@@ -31,7 +31,7 @@ export default function TextArea({ label, value, onChange, readOnly = false, pla
         spellCheck={false}
         autoCapitalize="off"
         autoCorrect="off"
-        className={`w-full resize-y rounded-md border border-line px-3 py-2.5 font-mono text-sm leading-relaxed text-ink placeholder:text-muted ${
+        className={`w-full resize-y rounded-md border border-line-strong px-3 py-2.5 font-mono text-sm leading-relaxed text-ink placeholder:text-muted ${
           readOnly ? "bg-canvas" : "bg-surface"
         }`}
       />

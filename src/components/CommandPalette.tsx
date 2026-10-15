@@ -71,7 +71,7 @@ export default function CommandPalette() {
         onClick={open}
         aria-label="Search tools"
         aria-keyshortcuts="Control+K Meta+K"
-        className="inline-flex h-10 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm text-muted hover:bg-canvas hover:text-ink"
+        className="inline-flex h-10 items-center gap-2 rounded-md border border-line-strong bg-surface px-3 text-sm text-muted hover:bg-canvas hover:text-ink"
       >
         <Search size={16} aria-hidden />
         <span className="hidden sm:inline">Search tools</span>

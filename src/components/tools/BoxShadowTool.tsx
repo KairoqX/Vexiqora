@@ -56,7 +56,7 @@ export default function BoxShadowTool() {
           <RangeInput label="Opacity" value={layer.opacity} onChange={(opacity) => change({ opacity })} min={0} max={100} unit="%" />
           <div className="flex flex-col gap-1.5">
             <label htmlFor="shadow-color" className="text-sm font-medium">Color</label>
-            <input id="shadow-color" type="color" value={layer.color} onChange={(e) => change({ color: e.target.value })} className="h-10 w-20 cursor-pointer rounded-md border border-line bg-surface p-1" />
+            <input id="shadow-color" type="color" value={layer.color} onChange={(e) => change({ color: e.target.value })} className="h-10 w-20 cursor-pointer rounded-md border border-line-strong bg-surface p-1" />
           </div>
         </div>
         <CheckboxInput label="Inset (shadow inside the box)" checked={layer.inset} onChange={(inset) => change({ inset })} />

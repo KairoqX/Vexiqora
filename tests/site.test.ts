@@ -146,9 +146,84 @@ test("assets: favicon.ico is a valid ICO containing 16, 32 and 48 px images", ()
   }
 });
 
-test("assets: icon.svg is a valid SVG with a viewBox", () => {
+test("assets: icon.svg is a 64x64 SVG that switches colours for dark browser tabs", () => {
   const svg = fs.readFileSync(path.join(root, "src/app/icon.svg"), "utf8");
-  assert.match(svg, /^<svg[^>]+viewBox="0 0 32 32"/);
+  assert.match(svg, /^<svg[^>]+viewBox="0 0 64 64"/);
+  assert.match(svg, /prefers-color-scheme: dark/);
+  assert.match(svg, /<path class="mk"/);
+  assert.doesNotMatch(svg, /#1d6b57/i, "no leftover green");
+});
+
+test("assets: the logo mark is shared, well-formed and used by the navbar logo and favicon", () => {
+  const mark = fs.readFileSync(path.join(root, "src/lib/logoMark.ts"), "utf8");
+  const d = (mark.match(/d: "([^"]+)"/) ?? [])[1] ?? "";
+  assert.ok(d.length > 800 && d.startsWith("M") && d.endsWith("Z"));
+  assert.equal((d.match(/M/g) ?? []).length, 5, "three V pieces, the orbit ring and the sparkle");
+  assert.doesNotMatch(d, /NaN|undefined|Infinity/);
+  const icon = fs.readFileSync(path.join(root, "src/app/icon.svg"), "utf8");
+  assert.ok(icon.includes(d), "icon.svg uses exactly the same path as the navbar logo");
+  assert.match(fs.readFileSync(path.join(root, "src/components/Logo.tsx"), "utf8"), /LOGO_MARK/);
+  assert.ok(fs.readFileSync(path.join(root, "design/logo-mark.svg"), "utf8").includes(d), "the editable source matches");
+});
+
+test("assets: the social image source is monochrome", () => {
+  const svg = fs.readFileSync(path.join(root, "design/og-image.svg"), "utf8");
+  const colours = new Set((svg.match(/#[0-9a-f]{6}\b/gi) ?? []).map((c) => c.toLowerCase()));
+  for (const c of colours) {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+    assert.ok(r === g && g === b, `${c} is not a grey`);
+  }
+});
+
+// ---------- accessibility: colour contrast of the real theme values ----------
+function themeColours(block: string): Record<string, [number, number, number]> {
+  const out: Record<string, [number, number, number]> = {};
+  for (const m of block.matchAll(/--([a-z-]+):\s*(\d+) (\d+) (\d+);/g)) out[m[1]] = [Number(m[2]), Number(m[3]), Number(m[4])];
+  return out;
+}
+const luminance = ([r, g, b]: [number, number, number]) => {
+  const f = (v: number) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+const contrast = (a: [number, number, number], b: [number, number, number]) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+test("theme: text meets WCAG AA (4.5:1) and form borders meet 3:1 in both themes", () => {
+  const css = fs.readFileSync(path.join(root, "src/app/globals.css"), "utf8");
+  const themes = {
+    light: themeColours(css.slice(css.indexOf(":root"), css.indexOf(".dark"))),
+    dark: themeColours(css.slice(css.indexOf(".dark"), css.indexOf("@layer base"))),
+  };
+  const textPairs: [string, string][] = [
+    ["ink", "canvas"], ["ink", "surface"], ["muted", "canvas"], ["muted", "surface"],
+    ["accent-text", "surface"], ["accent-text", "canvas"], ["accent-text", "accent-soft"], ["ink", "accent-soft"],
+    ["on-accent", "accent"], ["on-accent", "accent-strong"], ["danger", "danger-soft"], ["danger", "surface"],
+    ["ink", "added-bg"], ["ink", "removed-bg"], ["muted", "removed-bg"],
+  ];
+  const uiPairs: [string, string][] = [["line-strong", "surface"], ["line-strong", "canvas"], ["accent", "canvas"], ["accent", "surface"]];
+  for (const [name, t] of Object.entries(themes)) {
+    for (const [fg, bg] of textPairs) assert.ok(contrast(t[fg], t[bg]) >= 4.5, `${name}: ${fg} on ${bg} is ${contrast(t[fg], t[bg]).toFixed(2)}:1`);
+    for (const [fg, bg] of uiPairs) assert.ok(contrast(t[fg], t[bg]) >= 3, `${name}: ${fg} against ${bg} is ${contrast(t[fg], t[bg]).toFixed(2)}:1`);
+  }
+});
+
+test("theme: the palette is monochrome apart from the error colour", () => {
+  const css = fs.readFileSync(path.join(root, "src/app/globals.css"), "utf8");
+  const block = css.slice(css.indexOf(":root"), css.indexOf("@layer base"));
+  for (const [name, [r, g, b]] of Object.entries(themeColours(block))) {
+    if (name.startsWith("danger")) continue;
+    assert.ok(r === g && g === b, `--${name} (${r} ${g} ${b}) is not a grey`);
+  }
+});
+
+test("theme: the toggle is an accessible black-and-white switch", () => {
+  const toggle = fs.readFileSync(path.join(root, "src/components/ThemeToggle.tsx"), "utf8");
+  assert.match(toggle, /role="switch"/);
+  assert.match(toggle, /aria-checked=/);
+  assert.match(toggle, /aria-label="Dark theme"/);
+  assert.match(fs.readFileSync(path.join(root, "src/components/Button.tsx"), "utf8"), /text-on-accent/);
 });
 
 test("assets: no static robots.txt or sitemap.xml that would conflict with the generated ones", () => {
@@ -233,7 +308,7 @@ test("example: color, gradient, box shadow and border radius", () => {
   const c = parseColor(examples["color-converter"].input);
   assert.ok(c.ok);
   assert.equal(`${toRgbString(c.color)}\n${toHslString(c.color)}`, examples["color-converter"].output);
-  const g = gradientCss({ type: "linear", angle: 90, stops: [{ color: "#1d6b57", position: 0 }, { color: "#5fd0ae", position: 100 }] });
+  const g = gradientCss({ type: "linear", angle: 90, stops: [{ color: "#111111", position: 0 }, { color: "#e5e5e5", position: 100 }] });
   assert.ok(g.ok && g.css === examples["gradient-generator"].output);
   const s = boxShadowCss([defaultLayer]);
   assert.ok(s.ok && s.css === examples["box-shadow-generator"].output);

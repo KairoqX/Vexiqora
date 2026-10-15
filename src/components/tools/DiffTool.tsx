@@ -33,7 +33,7 @@ function SideCell({ line, side, partner }: { line: DiffLine | null; side: "left"
     content = (
       <>
         {parts.prefix}
-        {middle !== "" && <mark className={`rounded-sm px-0.5 text-ink ${side === "left" ? "bg-danger/25" : "bg-accent/30"}`}>{middle}</mark>}
+        {middle !== "" && <mark className={`rounded-sm px-0.5 text-ink ${side === "left" ? "bg-ink/15 line-through" : "bg-ink/25 font-semibold"}`}>{middle}</mark>}
         {parts.suffix}
       </>
     );
@@ -159,7 +159,7 @@ export default function DiffTool() {
                         <span aria-hidden>{marker[line.type].symbol}</span>
                         <span className="sr-only">{marker[line.type].label}</span>
                       </td>
-                      <td className="whitespace-pre px-2 py-0.5 align-top">{line.text === "" ? "\u00a0" : line.text}</td>
+                      <td className={`whitespace-pre px-2 py-0.5 align-top ${line.type === "removed" ? "line-through decoration-muted" : ""}`}>{line.text === "" ? "\u00a0" : line.text}</td>
                     </tr>
                   ))}
                 </tbody>

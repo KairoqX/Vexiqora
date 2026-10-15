@@ -65,7 +65,7 @@ export default function ToolBrowser() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search tools, for example “json”, “color” or “password”"
           autoComplete="off"
-          className="h-12 w-full rounded-md border border-line bg-surface pl-10 pr-3 text-base text-ink placeholder:text-muted"
+          className="h-12 w-full rounded-md border border-line-strong bg-surface pl-10 pr-3 text-base text-ink placeholder:text-muted"
         />
       </div>
 
